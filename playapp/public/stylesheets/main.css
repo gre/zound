@@ -22,14 +22,14 @@ button:active, button:hover {
 
 #channels header {
   display: block;
-  text-align: center;
+  text-align: right;
 }
 #channels header h1 {
   padding: 0;
   margin: 0;
   margin-bottom: 10px;
   letter-spacing: 1em;
-  font-size: 70px;
+  font-size: 64px;
   color: #222;
   text-shadow: 1px 1px 0px #000;
 }
