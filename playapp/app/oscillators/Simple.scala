@@ -18,9 +18,9 @@ import scala.util.Random
 // - fitler over all oscs.
 
 
-class SimpleOscillator(output: Channel[Array[Byte]])  {
+class SimpleOscillator(output: Channel[Array[Double]])  {
 
-  val lineOut = new LineOut()
+  //val lineOut = new LineOut()
   val out = new MonoStreamWriter()
 
   val hz = Array(261.6, 329.6, 392.0)
@@ -29,22 +29,24 @@ class SimpleOscillator(output: Channel[Array[Byte]])  {
 
   val synth = {
     val synth = JSyn.createSynthesizer()
-    synth.add(lineOut)
+    //synth.add(lineOut)
     synth.add(out)
     out.setOutputStream(new AudioOutputStream(){
       def close() {
-        println("CLOSE!")
       }
       def write(value: Double) {
-        println("write(value)")
+        output.push(Array(value))
       }
       def write(buffer: Array[Double]) {
-        println("write(buffer)")
+        write(buffer, 0, buffer.length)
       }
       def write(buffer: Array[Double], start: Int, count: Int) {
+        output.push(buffer.slice(start, start+count))
+        /*
         val buf = java.nio.ByteBuffer.allocate(8*buffer.length)
         buf.asDoubleBuffer.put(java.nio.DoubleBuffer.wrap(buffer))
         output.push(buf.array)
+        */
       }
     })
     synth
@@ -65,22 +67,23 @@ class SimpleOscillator(output: Channel[Array[Byte]])  {
     // lfo.output.connect(osc.frequency)
 
     synth.add(osc)
-    osc.output.connect( 0, lineOut.input, 0 )
-    osc.output.connect( 0, lineOut.input, 1 )
+    osc.output.connect(out)
+    //osc.output.connect( 0, lineOut.input, 0 )
+    //osc.output.connect( 0, lineOut.input, 1 )
     this
   }
 
   def start() = {
     synth.start()
     out.start()
-    lineOut.start()
+    //lineOut.start()
     this
   }
 
   def stop() = {
     synth.stop()
     out.stop()
-    lineOut.stop()
+    //lineOut.stop()
     this
   }
 
