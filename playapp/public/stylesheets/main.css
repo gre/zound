@@ -1,29 +1,70 @@
 body {
     width: 700px;
     margin: 0 auto;
-    font-family: monospace;   
+    font-family: monospace;
+    background: #000;
+    color: #ccc;
 }
 
 #controls {
-    margin: 10px 0;
+  margin: 10px 0;
 }
 
-#channels {
-    background-color: #eee;
+#channels .head {
+  border-bottom: 1px solid #555;
+  padding: 0px;
+  margin: 0px 5px;
+  margin-bottom: 15px;
+  text-align: center;
 }
 
 #channels h2 {
-    margin: 2px;
+  position: relative;
+  top: 8px;
+  padding: 0 5px;
+  margin: 0;
+  display: inline-block;
+  background: #222;
+  text-transform: uppercase;
+  font-family: sans-serif;
+  font-size: 14px;
+}
+
+#channels label {
+  margin-left: 5%;
+  width: 40%;
+  display: inline-block;
+}
+
+#channels input[type=radio] {
+  content: url(/assets/images/radio.png);
+  margin: 0;
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+}
+
+#channels input[type=radio]:checked {
+  content: url(/assets/images/radio-checked.png);
+}
+
+
+#channels {
+    padding: 5px;
+    background-color: #333;
+    color: #ccc;
+    width: 585px;
 }
 
 #channels > div {
     float: left;
-    background-color: #ccc;
+    background-color: #222;
     width: 180px;
-    border-right: 2px solid #666;
+    border-right: 2px solid #111;
     padding: 4px;
     margin-right: 5px;
 }
 
 #channels > div > div {
-    margin-bottom: 21px;
+  margin-bottom: 21px;
+}

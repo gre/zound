@@ -10,78 +10,60 @@
     </div>
 
     <section id="channels">
-        <div class="channel" id="channel0">
-            <h2>Chan 1</h2>
+
+      @Range(0, 3).map { i =>
+        <div class="channel" id="channel@i">
+          <div class="head">
+            <h2>Chan @i</h2>
+          </div>
             <div class="sound-onoff">
+              <label>
                 <input type="radio" name="ch0-on" value="sound-on" /> On
+              </label>
+              <label>
                 <input type="radio" name="ch0-on" value="sound-off" /> Off
+              </label>
             </div>
             <div>
+              <label>
                 <input type="radio" name="ch0-wave" value="wave-sine" /> Sine
+              </label>
+              <label>
                 <input type="radio" name="ch0-wave" value="wave-sine" /> Saw
+              </label>
                 <br/>
+              <label>
                 <input type="radio" name="ch0-wave" value="wave-sine" /> Pulse
+              </label>
+              <label>
                 <input type="radio" name="ch0-wave" value="wave-sine" /> Noise
+              </label>
             </div>
             <div class="sound-freq">
+              <label>
                 <input type="radio" name="ch0-note" value="164.8" /> C-1
+              </label>
+              <label>
                 <input type="radio" name="ch0-note" value="196.0" /> E-1
+              </label>
                 <br/>
+              <label>
                 <input type="radio" name="ch0-note" value="261.6" /> G-1
+              </label>
+              <label>
                 <input type="radio" name="ch0-note" value="329.6" /> C-2
+              </label>
                 <br/>
+              <label>
                 <input type="radio" name="ch0-note" value="392.0" /> E-3
+              </label>
+              <label>
                 <input type="radio" name="ch0-note" value="523.2" /> G-2
+              </label>
             </div>
-        </div>
-        <div class="channel" id="channel1">
-            <h2>Chan 1</h2>
-            <div class="sound-onoff">
-                <input type="radio" name="ch1-on" value="sound-on" /> On
-                <input type="radio" name="ch1-on" value="sound-off" /> Off
-            </div>
-            <div>
-                <input type="radio" name="ch1-wave" value="wave-sine" /> Sine
-                <input type="radio" name="ch1-wave" value="wave-sine" /> Saw
-                <br/>
-                <input type="radio" name="ch1-wave" value="wave-sine" /> Pulse
-                <input type="radio" name="ch1-wave" value="wave-sine" /> Noise
-            </div>
-            <div class="sound-freq">
-                <input type="radio" name="ch0-note" value="164.8" /> C-1
-                <input type="radio" name="ch0-note" value="196.0" /> E-1
-                <br/>
-                <input type="radio" name="ch0-note" value="261.6" /> G-1
-                <input type="radio" name="ch0-note" value="329.6" /> C-2
-                <br/>
-                <input type="radio" name="ch0-note" value="392.0" /> E-3
-                <input type="radio" name="ch0-note" value="523.2" /> G-2
-            </div>
-        </div>
-        <div class="channel" id="channel2">
-            <h2>Chan 1</h2>
-            <div class="sound-onoff">
-                <input type="radio" name="ch2-on" value="sound-on" /> On
-                <input type="radio" name="ch2-on" value="sound-off" /> Off
-            </div>
-            <div>
-                <input type="radio" name="ch2-wave" value="wave-sine" /> Sine
-                <input type="radio" name="ch2-wave" value="wave-sine" /> Saw
-                <br/>
-                <input type="radio" name="ch2-wave" value="wave-sine" /> Pulse
-                <input type="radio" name="ch2-wave" value="wave-sine" /> Noise
-            </div>
-            <div class="sound-freq">
-                <input type="radio" name="ch0-note" value="164.8" /> C-1
-                <input type="radio" name="ch0-note" value="196.0" /> E-1
-                <br/>
-                <input type="radio" name="ch0-note" value="261.6" /> G-1
-                <input type="radio" name="ch0-note" value="329.6" /> C-2
-                <br/>
-                <input type="radio" name="ch0-note" value="392.0" /> E-3
-                <input type="radio" name="ch0-note" value="523.2" /> G-2
-            </div>
-        </div>
+          </div>
+          }
+
         <br style="clear:both" />
     </section>
     
