@@ -20,7 +20,7 @@ object Application extends Controller {
 
   val (enum, channel) = Concurrent.broadcast[Array[Double]]
 
-  val oscillator = new SimpleOscillator(channel).start()
+  val oscillator = new Zounds(channel).start()
 
   lazy val chunked = Concurrent.broadcast1((enum /*&> Enumeratee.grouped( 
       Traversable.take[Array[Double]](5000) &>>
@@ -45,6 +45,7 @@ object Application extends Controller {
       }
   }
 
+
   def index = Action {
     //val stream = oscillator.getStream()
     Ok(views.html.index(""))
@@ -64,9 +65,23 @@ object Application extends Controller {
     oscillator.stop()
     Ok(toJson(Map("result" -> "Stopped")))
   }
+
+  def oscOn(osc:Int) = Action {
+    oscillator.oscOn(osc);
+    Ok(toJson(Map("result" -> "Osc on")))
+  }
+  def oscOff(osc:Int) = Action {
+    oscillator.oscOff(osc);
+    Ok(toJson(Map("result" -> "Osc off")))
+  }
   
   def addOsc = Action {
     oscillator.addOsc()
     Ok(toJson(Map("result" -> "OK")))
+  }
+
+  def oscFreq(osc:Int, freq:Double) = Action {
+    oscillator.oscFreq(osc, freq);
+    Ok(toJson(Map("result" -> "Freq changed")))
   }
 }

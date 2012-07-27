@@ -9,6 +9,9 @@ GET     /stream.wav                 controllers.Application.stream
 GET     /start                      controllers.Application.start
 GET     /stop                       controllers.Application.stop
 GET     /addOsc                     controllers.Application.addOsc
+GET     /osc/:osc/on                controllers.Application.oscOn(osc:Int)
+GET     /osc/:osc/off               controllers.Application.oscOff(osc:Int)
+GET     /osc/:osc/freq/:freq        controllers.Application.oscFreq(osc:Int, freq:Double)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

@@ -18,7 +18,7 @@ import scala.util.Random
 // - fitler over all oscs.
 
 
-class SimpleOscillator(output: Channel[Array[Double]])  {
+class Zounds(output: Channel[Array[Double]])  {
 
   //val lineOut = new LineOut()
   val out = new MonoStreamWriter()
@@ -51,14 +51,13 @@ class SimpleOscillator(output: Channel[Array[Double]])  {
     })
     synth
   }
-
-  addOsc()
-
+  
+  import scala.concurrent.stm._;
+  val oscList = List(Ref(addOsc()), Ref(addOsc()), Ref(addOsc()))
+  
   def addOsc() = {
     val osc = new SineOscillator()
-
     val freq = hz(rand.nextInt(hz.length)) * mul(rand.nextInt(mul.length))
-
     osc.frequency.setup(10.0, freq, 15000.0)
     // val lfo = new SineOscillator()
     // lfo.frequency.set( 0.1 )
@@ -68,9 +67,21 @@ class SimpleOscillator(output: Channel[Array[Double]])  {
 
     synth.add(osc)
     osc.output.connect(out)
-    //osc.output.connect( 0, lineOut.input, 0 )
-    //osc.output.connect( 0, lineOut.input, 1 )
-    this
+    osc.stop()
+    osc
+  }
+
+  def oscOn(oscIndex:Int) = {
+    println(oscIndex, "on")
+    //if(oscList.isDefined(oscIndex))
+    oscList(oscIndex).single().amplitude.set(6.0)
+    oscIndex
+  }
+
+  def oscOff(oscIndex:Int) = {
+    println(oscIndex, "off")
+    oscList(oscIndex).single().amplitude.set(0.0)
+    oscIndex
   }
 
   def start() = {
@@ -89,5 +100,10 @@ class SimpleOscillator(output: Channel[Array[Double]])  {
 
   def getStream() = {
 
+  }
+
+  def oscFreq(oscIndex:Int, freq:Double) = {
+    println("osc:", oscIndex, freq, "freq")
+    oscList(oscIndex).single().frequency.set(freq)
   }
 }
