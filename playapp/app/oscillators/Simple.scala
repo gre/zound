@@ -7,10 +7,16 @@ import play.api.libs.iteratee._
 import play.api.libs.concurrent._
 import Concurrent._
 
+import scala.util.Random
+
 class SimpleOscillator(output: Channel[Array[Byte]])  {
 
   val lineOut = new LineOut()
   val out = new MonoStreamWriter()
+
+  val hz = Array(261.6, 329.6, 392.0)
+  val mul = Array(0.25, 0.5, 1, 2, 3)
+  val rand = new Random(System.currentTimeMillis());
 
   val synth = {
     val synth = JSyn.createSynthesizer()
@@ -39,7 +45,10 @@ class SimpleOscillator(output: Channel[Array[Byte]])  {
 
   def addOsc() = {
     val osc = new SineOscillator()
-    osc.frequency.setup(10.0, new scala.util.Random().nextInt(1000), 15000.0)
+
+    val freq = hz(rand.nextInt(hz.length)) * mul(rand.nextInt(mul.length))
+    
+    osc.frequency.setup(10.0, freq, 15000.0)
     synth.add(osc)
     osc.output.connect( 0, lineOut.input, 0 )
     osc.output.connect( 0, lineOut.input, 1 )
