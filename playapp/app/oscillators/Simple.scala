@@ -9,6 +9,15 @@ import Concurrent._
 
 import scala.util.Random
 
+// Create 4 or 5 oscillators
+// - can be On/Off
+// - can switch between a few frequencies (to keep it "musical")
+// - can change wave types
+// Advanced:
+// - with LFO per each (changes freq)
+// - fitler over all oscs.
+
+
 class SimpleOscillator(output: Channel[Array[Byte]])  {
 
   val lineOut = new LineOut()
@@ -47,8 +56,14 @@ class SimpleOscillator(output: Channel[Array[Byte]])  {
     val osc = new SineOscillator()
 
     val freq = hz(rand.nextInt(hz.length)) * mul(rand.nextInt(mul.length))
-    
+
     osc.frequency.setup(10.0, freq, 15000.0)
+    // val lfo = new SineOscillator()
+    // lfo.frequency.set( 0.1 )
+    // lfo.amplitude.set(freq)
+    // synth.add(lfo)
+    // lfo.output.connect(osc.frequency)
+
     synth.add(osc)
     osc.output.connect( 0, lineOut.input, 0 )
     osc.output.connect( 0, lineOut.input, 1 )

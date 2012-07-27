@@ -1,0 +1,29 @@
+body {
+    width: 700px;
+    margin: 0 auto;
+    font-family: monospace;   
+}
+
+#controls {
+    margin: 10px 0;
+}
+
+#channels {
+    background-color: #eee;
+}
+
+#channels h2 {
+    margin: 2px;
+}
+
+#channels > div {
+    float: left;
+    background-color: #ccc;
+    width: 180px;
+    border-right: 2px solid #666;
+    padding: 4px;
+    margin-right: 5px;
+}
+
+#channels > div > div {
+    margin-bottom: 21px;

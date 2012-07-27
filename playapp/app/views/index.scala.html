@@ -2,16 +2,70 @@
 
 @main("Welcome to Play 2.0") {
 
+
+
     <audio src="/stream.wav" preload controls></audio>
-    
-    <div>
+
+    <div id="controls">
         <button id="sound-start">Start</button>
         <button id="sound-stop">Stop</button>
         <button id="sound-addOsc">Add OSC</button>
     </div>
 
-    <script type="text/javascript" charset="utf-8">
+    <section id="channels">
+        <div id="channel1">
+            <h2>Chan 1</h2>
+            <div>
+                <input type="radio" name="ch1-on" value="sound-on" /> On
+                <input type="radio" name="ch1-on" value="sound-off" /> Off
+            </div>
+            <div>
+                <input type="radio" name="ch1-wave" value="wave-sine" /> Sine
+                <input type="radio" name="ch1-wave" value="wave-sine" /> Saw
+                <br/>
+                <input type="radio" name="ch1-wave" value="wave-sine" /> Pulse
+                <input type="radio" name="ch1-wave" value="wave-sine" /> Noise
+            </div>
+            <div>
+                <input type="radio" name="ch1-note" value="note-c1" /> C-1
+                <input type="radio" name="ch1-note" value="note-c1" /> E-1
+                <br/>
+                <input type="radio" name="ch1-note" value="note-c1" /> G-1
+                <input type="radio" name="ch1-note" value="note-c1" /> C-2
+                <br/>
+                <input type="radio" name="ch1-note" value="note-c1" /> E-3
+                <input type="radio" name="ch1-note" value="note-c1" /> G-2
+            </div>
+        </div>
+        <div id="channel2">
+            <h2>Chan 2</h2>
+            <div>
+                <input type="radio" name="ch2-on" value="sound-on" /> On
+                <input type="radio" name="ch2-on" value="sound-off" /> Off
+            </div>
+            <div>
+                <input type="radio" name="ch2-wave" value="wave-sine" /> Sine
+                <input type="radio" name="ch2-wave" value="wave-sine" /> Saw
+                <br/>
+                <input type="radio" name="ch2-wave" value="wave-sine" /> Pulse
+                <input type="radio" name="ch2-wave" value="wave-sine" /> Noise
+            </div>
+            <div>
+                <input type="radio" name="ch2-note" value="note-c1" /> C-1
+                <input type="radio" name="ch2-note" value="note-c1" /> E-1
+                <br/>
+                <input type="radio" name="ch2-note" value="note-c1" /> G-1
+                <input type="radio" name="ch2-note" value="note-c1" /> C-2
+                <br/>
+                <input type="radio" name="ch2-note" value="note-c1" /> E-3
+                <input type="radio" name="ch2-note" value="note-c1" /> G-2
+            </div>
+        </div>
+        <br style="clear:both" />
+    </section>
+    
 
+    <script type="text/javascript" charset="utf-8">
         $("#sound-start").click(function(){
             $.get("/start");
         });
