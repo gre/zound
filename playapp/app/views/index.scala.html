@@ -2,14 +2,12 @@
 
 @main("Welcome to Play 2.0") {
 
-  <audio src="/stream.wav" preload autoplay controls></audio>
-
-    <div id="controls">
-        <button id="sound-start">Start</button>
-        <button id="sound-stop">Stop</button>
-    </div>
 
     <section id="channels">
+
+      <header>
+        <h1>ZOUND</h1>
+      </header>
 
       @Range(0, 3).map { i =>
         <div class="channel" id="channel@i">
@@ -64,7 +62,14 @@
           </div>
           }
         <br style="clear:both" />
-    </section>
+      </section>
+
+  <audio src="/stream.wav" preload autoplay controls></audio>
+
+    <div id="controls">
+        <button id="sound-start">Start</button>
+        <button id="sound-stop">Stop</button>
+    </div>
     
 
     <script type="text/javascript" charset="utf-8">

@@ -6,8 +6,32 @@ body {
     color: #ccc;
 }
 
+button {
+  background: #555;
+  color: #000;
+  border: none;
+  border-radius: 5px;
+}
+button:active, button:hover {
+  background: #777;
+}
+
 #controls {
   margin: 10px 0;
+}
+
+#channels header {
+  display: block;
+  text-align: center;
+}
+#channels header h1 {
+  padding: 0;
+  margin: 0;
+  margin-bottom: 10px;
+  letter-spacing: 1em;
+  font-size: 70px;
+  color: #222;
+  text-shadow: 1px 1px 0px #000;
 }
 
 #channels .head {
