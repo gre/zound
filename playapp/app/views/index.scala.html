@@ -2,6 +2,24 @@
 
 @main("Welcome to Play 2.0") {
 
-  <audio src="/stream.wav" preload controls></audio>
+    <audio src="/stream.wav" preload controls></audio>
     
+    <div>
+        <button id="sound-start">Start</button>
+        <button id="sound-stop">Stop</button>
+        <button id="sound-addOsc">Add OSC</button>
+    </div>
+
+    <script type="text/javascript" charset="utf-8">
+
+        $("#sound-start").click(function(){
+            $.get("/start");
+        });
+        $("#sound-stop").click(function(){
+            $.get("/stop");
+        });
+        $("#sound-addOsc").click(function(){
+            $.get("/addOsc");
+        });
+    </script>
 }
