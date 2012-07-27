@@ -12,6 +12,7 @@ GET     /addOsc                     controllers.Application.addOsc
 GET     /osc/:osc/on                controllers.Application.oscOn(osc:Int)
 GET     /osc/:osc/off               controllers.Application.oscOff(osc:Int)
 GET     /osc/:osc/freq/:freq        controllers.Application.oscFreq(osc:Int, freq:Double)
+GET     /osc/:osc/wave/:wave        controllers.Application.oscWave(osc:Int, wave)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

@@ -63,7 +63,6 @@
             </div>
           </div>
           }
-
         <br style="clear:both" />
     </section>
     
@@ -91,6 +90,14 @@
                 freq = $this.val();
             console.log(freq, chan)
             $.get("/osc/" + chan + "/freq/" + freq);
+        });
+
+        $(".sound-wave input").click(function(e){
+            var $this = $(this),
+                chan = parseInt($this.parents("div.channel:first").attr("id").replace(/[^0-9]/g, ""), 10),
+                wave = $this.val().replace("wave-", "");
+            console.log(wave, chan)
+            $.get("/osc/" + chan + "/wave/" + wave);
         })
     </script>
 }

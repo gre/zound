@@ -84,4 +84,9 @@ object Application extends Controller {
     oscillator.oscFreq(osc, freq);
     Ok(toJson(Map("result" -> "Freq changed")))
   }
+
+  def oscWave(osc:Int, wave:String) = Action {
+    oscillator.oscWave(osc, wave);
+    Ok(toJson(Map("result" -> "Wave changed")))
+  }
 }
