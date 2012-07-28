@@ -11,7 +11,7 @@ case class MonoWaveEncoder (
 
   val contentType = "audio/wav"
 
-  def header: Array[Byte] = {
+  lazy val header: Array[Byte] = {
     val riff = "RIFF".toArray.map(_.toByte) ++
                IntLittleBytes(0x7fffffff) ++ // put the maximum ChunkSize (we stream)
                "WAVE".toArray.map(_.toByte);

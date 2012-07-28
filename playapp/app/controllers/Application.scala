@@ -16,7 +16,7 @@ import encoders._
 
 object Application extends Controller {
 
-  val (enum, channel) = Concurrent.broadcast[Array[Double]]
+  val (rawStream, channel) = Concurrent.broadcast[Array[Double]]
 
   val oscillator = new Zound(channel).start()
 
@@ -27,7 +27,7 @@ object Application extends Controller {
   
   val chunker = Enumeratee.grouped(Traversable.take[Array[Double]](5000) &>> Iteratee.consume())
 
-  lazy val chunkedAudioStream = broadcast(enum &> chunker &> audioEncoder)._1
+  lazy val chunkedAudioStream = broadcast(rawStream &> chunker &> audioEncoder)._1
 
   def index = Action {
     Ok(views.html.index())
