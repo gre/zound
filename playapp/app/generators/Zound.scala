@@ -1,8 +1,9 @@
-package oscillators
+package generators
 
 import com.jsyn._
 import com.jsyn.io._
 import com.jsyn.unitgen._
+import play.api._
 import play.api.libs.iteratee._
 import play.api.libs.concurrent._
 import Concurrent._
@@ -17,23 +18,18 @@ import scala.util.Random
 // - with LFO per each (changes freq)
 // - fitler over all oscs.
 
+class Zound(output: Channel[Array[Double]]) {
 
-class Zounds(output: Channel[Array[Double]])  {
-
-  //val lineOut = new LineOut()
   val out = new MonoStreamWriter()
-
   val hz = Array(261.6, 329.6, 392.0)
   val mul = Array(0.25, 0.5, 1, 2, 3)
   val rand = new Random(System.currentTimeMillis());
 
   val synth = {
     val synth = JSyn.createSynthesizer()
-    //synth.add(lineOut)
     synth.add(out)
     out.setOutputStream(new AudioOutputStream(){
-      def close() {
-      }
+      def close() {}
       def write(value: Double) {
         output.push(Array(value))
       }
@@ -42,11 +38,6 @@ class Zounds(output: Channel[Array[Double]])  {
       }
       def write(buffer: Array[Double], start: Int, count: Int) {
         output.push(buffer.slice(start, start+count))
-        /*
-        val buf = java.nio.ByteBuffer.allocate(8*buffer.length)
-        buf.asDoubleBuffer.put(java.nio.DoubleBuffer.wrap(buffer))
-        output.push(buf.array)
-        */
       }
     })
     synth
@@ -66,7 +57,6 @@ class Zounds(output: Channel[Array[Double]])  {
     // lfo.amplitude.set(freq)
     // synth.add(lfo)
     // lfo.output.connect(osc.frequency)
-
     synth.add(osc)
     osc.output.connect(out)
     osc.stop()
@@ -75,7 +65,6 @@ class Zounds(output: Channel[Array[Double]])  {
 
   def oscOn(oscIndex:Int) = {
     println(oscIndex, "on")
-    //if(oscList.isDefined(oscIndex))
     oscList(oscIndex).single().amplitude.set(6.0)
     oscIndex
   }
@@ -89,19 +78,13 @@ class Zounds(output: Channel[Array[Double]])  {
   def start() = {
     synth.start()
     out.start()
-    //lineOut.start()
     this
   }
 
   def stop() = {
     synth.stop()
     out.stop()
-    //lineOut.stop()
     this
-  }
-
-  def getStream() = {
-
   }
 
   def oscFreq(oscIndex:Int, freq:Double) = {

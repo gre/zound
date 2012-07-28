@@ -1,9 +1,12 @@
 body {
-    width: 700px;
-    margin: 50px auto;
     font-family: monospace;
     background: #000;
     color: #ccc;
+}
+
+#wrapper {
+    width: 600px;
+    margin: 50px auto;
 }
 
 button {
@@ -54,22 +57,24 @@ button:active, button:hover {
   font-size: 14px;
 }
 
-#channels label {
+#channels .field {
   margin-left: 5%;
   width: 40%;
   display: inline-block;
 }
 
 #channels input[type=radio] {
-  content: url(/assets/images/radio.png);
-  margin: 0;
-  display: inline-block;
-  width: 12px;
-  height: 12px;
+  display: none;
 }
 
-#channels input[type=radio]:checked {
-  content: url(/assets/images/radio-checked.png);
+#channels input[type=radio] + label {
+  background: url(/assets/images/radio.png) no-repeat 0 50%;
+  margin: 0;
+  padding-left: 15px;
+}
+
+#channels input[type=radio]:checked + label {
+  background-image: url(/assets/images/radio-checked.png);
 }
 
 
@@ -89,6 +94,11 @@ button:active, button:hover {
     margin-right: 5px;
 }
 
-#channels > div > div {
-  margin-bottom: 21px;
+#channels .field {
+  margin-bottom: 10px;
+}
+
+#controls {
+  text-align: center;
+  padding: 10px;
 }

@@ -1,6 +1,6 @@
-@(message: String)
+@()
 
-@main("Welcome to Play 2.0") {
+@main("ZOUND") {
 
 
     <section id="channels">
@@ -15,77 +15,69 @@
             <h2>Chan @i</h2>
           </div>
             <div class="sound-onoff">
-              <label>
-                <input type="radio" name="ch0-on" value="sound-on" /> On
-              </label>
-              <label>
-                <input type="radio" name="ch0-on" value="sound-off" /> Off
-              </label>
+              <div class="field">
+                <input id="ch@i-switch-on" type="radio" name="ch@i-on" value="sound-on" />
+                <label for="ch@i-switch-on">On</label>
+              </div>
+              <div class="field">
+                <input id="ch@i-switch-off" type="radio" name="ch@i-on" value="sound-off" />
+                <label for="ch@i-switch-off">Off</label>
+              </div>
             </div>
             <div>
-              <label>
-                <input type="radio" name="ch0-wave" value="wave-sine" /> Sine
-              </label>
-              <label>
-                <input type="radio" name="ch0-wave" value="wave-sine" /> Saw
-              </label>
+              <div class="field">
+                <input id="ch@i-wave-sine" type="radio" name="ch@i-wave" value="wave-sine" /> 
+                <label for="ch@i-wave-sine">Sine</label>
+              </div>
+              <div class="field">
+                <input id="ch@i-wave-saw" type="radio" name="ch@i-wave" value="wave-saw" /> 
+                <label for="ch@i-wave-saw">Saw</label>
+              </div>
                 <br/>
-              <label>
-                <input type="radio" name="ch0-wave" value="wave-sine" /> Pulse
-              </label>
-              <label>
-                <input type="radio" name="ch0-wave" value="wave-sine" /> Noise
-              </label>
+              <div class="field">
+                <input id="ch@i-wave-pulse" type="radio" name="ch@i-wave" value="wave-pulse" /> 
+                <label for="ch@i-wave-pulse">Pulse</label>
+              </div>
+              <div class="field">
+                <input id="ch@i-wave-noise" type="radio" name="ch@i-wave" value="wave-noise" /> 
+                <label for="ch@i-wave-noise">Noise</label>
+              </div>
             </div>
             <div class="sound-freq">
-              <label>
-                <input type="radio" name="ch0-note" value="164.8" /> C-1
-              </label>
-              <label>
-                <input type="radio" name="ch0-note" value="196.0" /> E-1
-              </label>
-                <br/>
-              <label>
-                <input type="radio" name="ch0-note" value="261.6" /> G-1
-              </label>
-              <label>
-                <input type="radio" name="ch0-note" value="329.6" /> C-2
-              </label>
-                <br/>
-              <label>
-                <input type="radio" name="ch0-note" value="392.0" /> E-3
-              </label>
-              <label>
-                <input type="radio" name="ch0-note" value="523.2" /> G-2
-              </label>
+              @for( (name, freq) <- List(
+                ("C-1", 164.8),
+                ("E-1", 196.0),
+                ("G-1", 261.6),
+                ("C-2", 329.6),
+                ("E-3", 392.0),
+                ("G-2", 523.2)
+                )) {
+              <div class="field">
+                <input id="ch@i-note-@name" type="radio" name="ch@i-note" value="@freq" /> 
+                <label for="ch@i-note-@name">@name</label>
+              </div>
+              }
             </div>
           </div>
           }
         <br style="clear:both" />
       </section>
 
-  <audio src="/stream.wav" preload autoplay controls></audio>
+      <div id="controls">
+        <audio src="/stream.wav?t=@(new java.util.Date().getTime)" preload autoplay controls></audio>
+      </div>
 
-    <div id="controls">
-        <button id="sound-start">Start</button>
-        <button id="sound-stop">Stop</button>
-    </div>
-    
+      <div style="display: none" class="images">
+        <img src="/assets/images/radio.png" alt="" />
+        <img src="/assets/images/radio-checked.png" alt="" />
+      </div>
 
     <script type="text/javascript" charset="utf-8">
-        $("#sound-start").click(function(){
-            $.get("/start");
-        });
-        $("#sound-stop").click(function(){
-            $.get("/stop");
-        });
-    
         $(".sound-onoff input").click(function(e){
             var $this = $(this),
                 chan = parseInt($this.parents("div.channel:first").attr("id").replace(/[^0-9]/g, ""), 10),
                 onOff = $this.val().replace("sound-", "");
-            console.log(onOff, chan)
-            $.get("/osc/" + chan + "/" + onOff);
+            $.post("/osc/" + chan + "/" + onOff);
         });
 
 
@@ -93,16 +85,14 @@
             var $this = $(this),
                 chan = parseInt($this.parents("div.channel:first").attr("id").replace(/[^0-9]/g, ""), 10),
                 freq = $this.val();
-            console.log(freq, chan)
-            $.get("/osc/" + chan + "/freq/" + freq);
+            $.post("/osc/" + chan + "/freq/" + freq);
         });
 
         $(".sound-wave input").click(function(e){
             var $this = $(this),
                 chan = parseInt($this.parents("div.channel:first").attr("id").replace(/[^0-9]/g, ""), 10),
                 wave = $this.val().replace("wave-", "");
-            console.log(wave, chan)
-            $.get("/osc/" + chan + "/wave/" + wave);
+            $.post("/osc/" + chan + "/wave/" + wave);
         })
     </script>
 }
