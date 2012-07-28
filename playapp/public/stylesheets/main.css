@@ -1,12 +1,12 @@
 body {
-    font-family: monospace;
-    background: #000;
-    color: #ccc;
+  font-family: monospace;
+  background: #000;
+  color: #ccc;
 }
 
 #wrapper {
-    width: 600px;
-    margin: 50px auto;
+  width: 600px;
+  margin: 50px auto;
 }
 
 button {
@@ -21,6 +21,10 @@ button:active, button:hover {
 
 #controls {
   margin: 10px 0;
+}
+
+#channels {
+  overflow: auto;
 }
 
 #channels header {
@@ -77,25 +81,31 @@ button:active, button:hover {
   background-image: url(/assets/images/radio-checked.png);
 }
 
-
 #channels {
-    padding: 5px;
-    background-color: #333;
-    color: #ccc;
-    width: 585px;
+  padding: 5px;
+  background-color: #333;
+  color: #ccc;
+  width: 580px;
 }
 
-#channels > div {
-    float: left;
-    background-color: #222;
-    width: 180px;
-    border-right: 2px solid #111;
-    padding: 4px;
-    margin-right: 5px;
+.channel {
+  float: left;
+  background-color: #222;
+  width: 180px;
+  border-right: 2px solid #111;
+  padding: 4px;
+  margin-right: 5px;
+}
+.channel:last-child {
+  margin-right: 0;
 }
 
-#channels .field {
+.channel > div {
   margin-bottom: 10px;
+}
+
+.channel .field {
+  margin-bottom: 5px;
 }
 
 #controls {
