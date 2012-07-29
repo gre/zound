@@ -18,7 +18,7 @@ object Application extends Controller {
 
   val (rawStream, channel) = Concurrent.broadcast[Array[Double]]
 
-  val oscillator = new Zound(channel).start()
+  val oscillator = new ZoundGenerator(channel).start()
 
   val audio = MonoWaveEncoder() // For now we are using WAVE
 

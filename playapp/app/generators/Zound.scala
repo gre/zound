@@ -18,7 +18,7 @@ import scala.util.Random
 // - with LFO per each (changes freq)
 // - fitler over all oscs.
 
-class Zound(output: Channel[Array[Double]]) {
+class ZoundGenerator(output: Channel[Array[Double]]) {
 
   val out = new MonoStreamWriter()
   val hz = Array(261.6, 329.6, 392.0)
