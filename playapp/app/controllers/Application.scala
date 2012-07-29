@@ -27,14 +27,15 @@ object Application extends Controller {
   
   val chunker = Enumeratee.grouped(Traversable.take[Array[Double]](5000) &>> Iteratee.consume())
 
-  val chunkedAudioStream = broadcast(rawStream &> chunker &> audioEncoder)._1
+  val chunkedAudioStream = rawStream &> chunker &> audioEncoder
+  val (sharedChunkedAudioStream, _) = broadcast(chunkedAudioStream)
 
   def index = Action {
     Ok(views.html.index())
   }
 
   def stream = Action {
-    Ok.stream(audioHeader >>> chunkedAudioStream).
+    Ok.stream(audioHeader >>> sharedChunkedAudioStream).
        withHeaders( (CONTENT_TYPE, audio.contentType),
                     (CACHE_CONTROL, "no-cache") )
   } 
