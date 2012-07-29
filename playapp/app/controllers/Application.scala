@@ -27,7 +27,7 @@ object Application extends Controller {
   
   val chunker = Enumeratee.grouped(Traversable.take[Array[Double]](5000) &>> Iteratee.consume())
 
-  val chunkedAudioStream = (rawStream &> chunker &> audioEncoder)
+  val chunkedAudioStream = broadcast(rawStream &> chunker &> audioEncoder)._1
 
   def index = Action {
     Ok(views.html.index())
@@ -62,5 +62,8 @@ object Application extends Controller {
     zound.oscWave(osc, wave);
     Ok(toJson(Map("result" -> "Wave changed")))
   }
+
+  // temporary bugfixed copy/paste of Concurrent.scala:366
+  def broadcast[E](e: Enumerator[E],interestIsDownToZero: => Unit = ()): (Enumerator[E],Broadcaster) = {val h = Concurrent.hub(e,() => interestIsDownToZero); (h.getPatchCord(),h) }
 
 }
