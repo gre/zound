@@ -35,7 +35,8 @@ object Application extends Controller {
 
   def stream = Action {
     Ok.stream(audioHeader >>> chunkedAudioStream).
-       withHeaders( (CONTENT_TYPE, audio.contentType) )
+       withHeaders( (CONTENT_TYPE, audio.contentType),
+                    (CACHE_CONTROL, "no-cache") )
   } 
 
   def oscOn(osc:Int) = Action {
