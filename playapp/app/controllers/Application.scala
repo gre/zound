@@ -27,7 +27,7 @@ object Application extends Controller {
   
   val chunker = Enumeratee.grouped(Traversable.take[Array[Double]](5000) &>> Iteratee.consume())
 
-  lazy val chunkedAudioStream = (rawStream &> chunker &> audioEncoder)
+  val chunkedAudioStream = (rawStream &> chunker &> audioEncoder)
 
   def index = Action {
     Ok(views.html.index())
