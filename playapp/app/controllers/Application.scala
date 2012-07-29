@@ -18,7 +18,7 @@ object Application extends Controller {
 
   val (rawStream, channel) = Concurrent.broadcast[Array[Double]]
 
-  val oscillator = new ZoundGenerator(channel).start()
+  val zound = new ZoundGenerator(channel).start()
 
   val audio = MonoWaveEncoder() // For now we are using WAVE
 
@@ -39,26 +39,26 @@ object Application extends Controller {
   } 
 
   def oscOn(osc:Int) = Action {
-    oscillator.oscOn(osc);
+    zound.oscOn(osc);
     Ok(toJson(Map("result" -> "Osc on")))
   }
   def oscOff(osc:Int) = Action {
-    oscillator.oscOff(osc);
+    zound.oscOff(osc);
     Ok(toJson(Map("result" -> "Osc off")))
   }
   
   def addOsc = Action {
-    oscillator.addOsc()
+    zound.addOsc()
     Ok(toJson(Map("result" -> "OK")))
   }
 
   def oscFreq(osc:Int, freq:Double) = Action {
-    oscillator.oscFreq(osc, freq);
+    zound.oscFreq(osc, freq);
     Ok(toJson(Map("result" -> "Freq changed")))
   }
 
   def oscWave(osc:Int, wave:String) = Action {
-    oscillator.oscWave(osc, wave);
+    zound.oscWave(osc, wave);
     Ok(toJson(Map("result" -> "Wave changed")))
   }
 
