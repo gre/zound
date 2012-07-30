@@ -76,6 +76,8 @@
         var MIN_PITCH = 150.0;
         var MAX_PITCH = 600.0;
 
+        var uniqueId = Math.random(); // OK this is a hacky!
+
         function syncVolumeControl (node) {
           var v = parseFloat(node.attr("data-value"));
           var rotate = "rotate("+Math.round(280*(v-0.5))+"deg)";
@@ -142,7 +144,23 @@
          });
 
          var actions = {
-           
+           "osc-freq": function (o) {
+            var node = $("#channel"+o.osc+" .sound-pitch .volume-control");
+            if (!node.hasClass("mousedown")) {
+              node.attr("data-value", (o.value-MIN_PITCH)/(MAX_PITCH-MIN_PITCH));
+              syncVolumeControl(node);
+            }
+          },
+          "osc-volume": function (o) {
+            var node = $("#channel"+o.osc+" .sound-volume .volume-control");
+            if (!node.hasClass("mousedown")) {
+              node.attr("data-value", o.value);
+              syncVolumeControl(node);
+            }
+          },
+          "osc-wave": function (o) {
+            $("#channel"+o.osc+" .wave."+o.value).click();
+          }
          }
 
          var sock = new WebSocket("@routes.Application.controls().webSocketURL()");
@@ -158,12 +176,9 @@
          }
 
          function handleAction (o) {
-           return; // TODO
-           if (!actions[o.type]) {
-             console.log("Unknown Action: ", o);
-             return;
-           }
-           actions[o.type](o);
+           if (o.myId == uniqueId) return;
+           if (actions[o.type])
+             actions[o.type](o);
          }
 
          function main () {
@@ -195,7 +210,7 @@
                send({ type: "osc-freq", osc: chan, value: pitch });
            });
 
-           send({ type: "connect", msg: "ready" });
+           send({ type: "connect", msg: "ready", myId: uniqueId });
            animatingTitle();
          }
 
