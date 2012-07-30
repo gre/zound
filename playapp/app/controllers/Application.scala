@@ -41,7 +41,7 @@ object Application extends Controller {
   // UI controls
 
   def index = Action { implicit request =>
-    Ok(views.html.index())
+    Ok(views.html.index(zound.getChannels))
   }
 
   val (controlsStream, controlsChannel) = Concurrent.broadcast[JsValue]

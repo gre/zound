@@ -21,15 +21,37 @@ import scala.util.Random
 // - fitler over all oscs.
 
 
-/*
-case class Oscillator ( enable: Boolean, wave: String, freq: Double )
+
+case class Oscillator ( wave: String, amp: Double, freq: Double )
 
 object Oscillator {
 
+  def toUnitOscillator (osc: Oscillator) : UnitOscillator = {
+    val o = osc.wave match {
+      case "sine" => new SineOscillator()
+      case "saw" => new SawtoothOscillator()
+      case "square" => new SquareOscillator()
+      case "pulse" => new PulseOscillator()
+      case "noise" => new RedNoise()
+      case _ => new SineOscillator()
+    }
+    o.frequency.set(osc.freq)
+    o.amplitude.set(osc.amp)
+    o
+  }
+
   def fromUnitOscillator (osc: UnitOscillator) : Oscillator = {
+    Oscillator(osc match {
+      case _: SineOscillator => "sine"
+      case _: SawtoothOscillator => "saw"
+      case _: SquareOscillator => "square"
+      case _: PulseOscillator => "pulse"
+      case _: RedNoise => "noise"
+      case _ => "sine"
+    }, osc.amplitude.get(0), osc.frequency.get(0))
   }
 }
-*/
+
 
 class ZoundGenerator(output: Channel[Array[Double]]) {
 
@@ -72,25 +94,20 @@ class ZoundGenerator(output: Channel[Array[Double]]) {
     }
   }
 
+  def getChannels = oscList map { osc =>
+    Oscillator.fromUnitOscillator(osc.single())
+  }
+
   
   import scala.concurrent.stm._;
   val oscList = List[Ref[UnitOscillator]](Ref(addRandomOsc()), Ref(addRandomOsc()), Ref(addRandomOsc()))
   
   def addRandomOsc() = {
-    addOsc("sine", 0.2, hz(rand.nextInt(hz.length)) * mul(rand.nextInt(mul.length)))
+    addOsc(Oscillator("sine", 0.2, hz(rand.nextInt(hz.length)) * mul(rand.nextInt(mul.length))))
   }
 
-  def addOsc(waveType: String, amp: Double, freq: Double) = {
-    val osc = waveType match {
-      case "sine" => new SineOscillator()
-      case "saw" => new SawtoothOscillator()
-      case "square" => new SquareOscillator()
-      case "pulse" => new PulseOscillator()
-      case "noise" => new RedNoise()
-      case _ => new SineOscillator()
-    }
-    osc.frequency.set(freq)
-    osc.amplitude.set(amp)
+  def addOsc(o: Oscillator) = {
+    val osc = Oscillator.toUnitOscillator(o)
     synth.add(osc)
     osc.output.connect(out)
     osc.stop()
@@ -128,7 +145,7 @@ class ZoundGenerator(output: Channel[Array[Double]]) {
     val freq = oldOsc.frequency.get(0)
     val amp = oldOsc.amplitude.get(0)
     removeOsc(oldOsc)
-    val osc = addOsc(waveType, amp, freq)
+    val osc = addOsc(Oscillator(waveType, amp, freq))
     oscList(oscIndex).single() = osc
 
     // val freq = oscList(oscIndex).single().frequency.get()
