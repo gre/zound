@@ -33,7 +33,7 @@ case class MonoWaveEncoder (
 
   def encodeData(data: Array[Double]): Array[Byte] = {
     data flatMap { d =>
-      ShortLittleBytes(math.max(-1, math.min(d, 1))*0x7fff toShort)
+      ShortLittleBytes(math.max(-1.0, math.min(d, 1.0))*0x7fff toShort)
     }
   }
 
