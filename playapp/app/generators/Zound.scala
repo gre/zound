@@ -7,6 +7,8 @@ import play.api._
 import play.api.libs.iteratee._
 import play.api.libs.concurrent._
 import Concurrent._
+import play.api.libs.json._
+import play.api.libs.json.Json._
 
 import scala.util.Random
 
@@ -17,6 +19,17 @@ import scala.util.Random
 // Advanced:
 // - with LFO per each (changes freq)
 // - fitler over all oscs.
+
+
+/*
+case class Oscillator ( enable: Boolean, wave: String, freq: Double )
+
+object Oscillator {
+
+  def fromUnitOscillator (osc: UnitOscillator) : Oscillator = {
+  }
+}
+*/
 
 class ZoundGenerator(output: Channel[Array[Double]]) {
 
@@ -42,37 +55,56 @@ class ZoundGenerator(output: Channel[Array[Double]]) {
     })
     synth
   }
+
+  def action (o: JsObject) {
+    (o\"type", o\"osc", o\"value") match {
+
+      case (JsString("osc-freq"), osc: JsNumber, freq: JsNumber) =>
+        oscFreq(osc.value.toInt, freq.value.toDouble)
+
+      case (JsString("osc-volume"), osc: JsNumber, volume: JsNumber) =>
+        oscVolume(osc.value.toInt, volume.value.toDouble)
+
+      case (JsString("osc-wave"), osc: JsNumber, wave: JsString) =>
+        oscWave(osc.value.toInt, wave.value)
+
+      case _ =>
+    }
+  }
+
   
   import scala.concurrent.stm._;
-  val oscList = List[Ref[UnitOscillator]](Ref(addOsc()), Ref(addOsc()), Ref(addOsc()))
+  val oscList = List[Ref[UnitOscillator]](Ref(addRandomOsc()), Ref(addRandomOsc()), Ref(addRandomOsc()))
   
-  def addOsc() = {
-    val osc = new SineOscillator()
-    val freq = hz(rand.nextInt(hz.length)) * mul(rand.nextInt(mul.length))
-    //osc.frequency.setup(0.3, freq, 15000.0)
+  def addRandomOsc() = {
+    addOsc("sine", 0.2, hz(rand.nextInt(hz.length)) * mul(rand.nextInt(mul.length)))
+  }
+
+  def addOsc(waveType: String, amp: Double, freq: Double) = {
+    val osc = waveType match {
+      case "sine" => new SineOscillator()
+      case "saw" => new SawtoothOscillator()
+      case "square" => new SquareOscillator()
+      case "pulse" => new PulseOscillator()
+      case "noise" => new RedNoise()
+      case _ => new SineOscillator()
+    }
     osc.frequency.set(freq)
-    osc.amplitude.set(6.0)
-    // val lfo = new SineOscillator()
-    // lfo.frequency.set( 0.1 )
-    // lfo.amplitude.set(freq)
-    // synth.add(lfo)
-    // lfo.output.connect(osc.frequency)
+    osc.amplitude.set(amp)
     synth.add(osc)
     osc.output.connect(out)
     osc.stop()
     osc
   }
 
-  def oscOn(oscIndex:Int) = {
-    println(oscIndex, "on")
-    oscList(oscIndex).single().amplitude.set(6.0)
-    oscIndex
+  def removeOsc(osc: UnitOscillator) = {
+    osc.output.disconnect(out.getInput)
+    osc.stop()
+    synth.remove(osc)
   }
 
-  def oscOff(oscIndex:Int) = {
-    println(oscIndex, "off")
-    oscList(oscIndex).single().amplitude.set(0.0)
-    oscIndex
+  def oscVolume(oscIndex:Int, volume: Double) {
+    oscList(oscIndex).single().amplitude.set(volume)
   }
 
   def start() = {
@@ -88,11 +120,16 @@ class ZoundGenerator(output: Channel[Array[Double]]) {
   }
 
   def oscFreq(oscIndex:Int, freq:Double) = {
-    println("osc:", oscIndex, freq, "freq")
     oscList(oscIndex).single().frequency.set(freq)
   }
 
   def oscWave(oscIndex:Int, waveType:String) = {
+    val oldOsc = oscList(oscIndex).single()
+    val freq = oldOsc.frequency.get(0)
+    val amp = oldOsc.amplitude.get(0)
+    removeOsc(oldOsc)
+    val osc = addOsc(waveType, amp, freq)
+    oscList(oscIndex).single() = osc
 
     // val freq = oscList(oscIndex).single().frequency.get()
     // val amp = oscList(oscIndex).single().amplitude.get()

@@ -9,6 +9,7 @@ import play.api.Play.current
 import play.api.libs.iteratee._
 import play.api.libs.concurrent._
 import Concurrent._
+import play.api.libs.json._
 import play.api.libs.json.Json._
 
 import generators._
@@ -30,38 +31,32 @@ object Application extends Controller {
   val chunkedAudioStream = rawStream &> chunker &> audioEncoder
   val (sharedChunkedAudioStream, _) = Concurrent.broadcast(chunkedAudioStream)
 
-  def index = Action {
-    Ok(views.html.index())
-  }
-
   def stream = Action {
     Ok.stream(audioHeader >>> sharedChunkedAudioStream &> Concurrent.dropInputIfNotReady(10)).
        withHeaders( (CONTENT_TYPE, audio.contentType),
                     (CACHE_CONTROL, "no-cache") )
-  } 
-
-  def oscOn(osc:Int) = Action {
-    zound.oscOn(osc);
-    Ok(toJson(Map("result" -> "Osc on")))
-  }
-  def oscOff(osc:Int) = Action {
-    zound.oscOff(osc);
-    Ok(toJson(Map("result" -> "Osc off")))
-  }
-  
-  def addOsc = Action {
-    zound.addOsc()
-    Ok(toJson(Map("result" -> "OK")))
   }
 
-  def oscFreq(osc:Int, freq:Double) = Action {
-    zound.oscFreq(osc, freq);
-    Ok(toJson(Map("result" -> "Freq changed")))
+
+  // UI controls
+
+  def index = Action { implicit request =>
+    Ok(views.html.index())
   }
 
-  def oscWave(osc:Int, wave:String) = Action {
-    zound.oscWave(osc, wave);
-    Ok(toJson(Map("result" -> "Wave changed")))
+  val (controlsStream, controlsChannel) = Concurrent.broadcast[JsValue]
+
+  def controls = WebSocket.async[JsValue] { request =>
+    
+    // in: handle messages from the user
+    val in = Iteratee.foreach[JsValue](_ match {
+      case o: JsObject => {
+        zound.action(o)
+        controlsChannel push o
+      }
+    })
+
+    Promise.pure((in, controlsStream))
   }
 
 }

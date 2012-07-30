@@ -9,6 +9,63 @@ body {
   margin: 50px auto;
 }
 
+.volume-control {
+  cursor: col-resize;
+  position: relative;
+  display: inline-block;
+  width: 58px;
+  height: 58px;
+  background: url(/assets/images/volume-bg.png) no-repeat;
+  z-index: 1;
+}
+
+.volume-handle {
+  z-index: 2;
+  background: url(/assets/images/volume-indicator.png) no-repeat;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 58px;
+  height: 58px;
+}
+
+label.wave {
+  cursor: pointer;
+}
+
+.wave {
+  width: 25px;
+  height: 25px;
+  border: #333 1px solid;
+  border-radius: 3px;
+  background-repeat: no-repeat;
+  background-image: url(/assets/images/waves.png);
+  background-color: #000;
+  display: inline-block;
+  margin: 0px 4px;
+}
+.wave.enabled {
+  background-image: url(/assets/images/waves-enabled.png);
+}
+.wave.noise {
+  background-position: 0px 0px;
+}
+.wave.saw {
+  background-position: 0px -25px;
+}
+.wave.sine {
+  background-position: 0px -50px;
+}
+.wave.square {
+  background-position: 0px -75px;
+}
+
+code {
+  background: #333;
+  color: #999;
+  padding: 1px 4px;
+}
+
 button {
   background: #555;
   color: #000;
@@ -19,7 +76,41 @@ button:active, button:hover {
   background: #777;
 }
 
+#error {
+  text-align: center;
+  color: #f44;
+  font-size: 1.4em;
+  padding: 10px 0;
+}
+
+#status {
+  float: left;
+}
+
+#status > div {
+  display: inline-block;
+  width: 60px;
+  font-size: 14px;
+  font-family: sans-serif;
+  font-weight: bold;
+  text-align: center;
+  margin: 0px 5px;
+  padding: 2px 5px;
+  border: #222 3px solid;
+  color: #333;
+}
+
+#status.enabled .onair, #status:not(.enabled) .offline {
+  color: #e55;
+  border-color: #e55;
+  text-shadow: 0px 0px 10px #f55;
+  -webkit-box-shadow: 0px 0px 10px #e55;
+  -moz-box-shadow: 0px 0px 10px #e55;
+  box-shadow: 0px 0px 10px #e55;
+}
+
 #controls {
+  padding: 10px;
   margin: 10px 0;
 }
 
@@ -46,7 +137,6 @@ button:active, button:hover {
   padding: 0px;
   margin: 0px 5px;
   margin-bottom: 15px;
-  text-align: center;
 }
 
 #channels h2 {
@@ -88,7 +178,15 @@ button:active, button:hover {
   width: 580px;
 }
 
+.volume-pitch {
+  margin-bottom: 10px;
+}
+.volume-pitch label {
+  font-size: 12px;
+}
+
 .channel {
+  text-align: center;
   float: left;
   background-color: #222;
   width: 180px;
@@ -100,15 +198,4 @@ button:active, button:hover {
   margin-right: 0;
 }
 
-.channel > div {
-  margin-bottom: 10px;
-}
 
-.channel .field {
-  margin-bottom: 5px;
-}
-
-#controls {
-  text-align: center;
-  padding: 10px;
-}

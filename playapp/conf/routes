@@ -2,15 +2,12 @@
 # This file defines all application routes (Higher priority routes first)
 # ~~~~
 
-# Home page
-GET     /                           controllers.Application.index
+# The stream
 GET     /stream.wav                 controllers.Application.stream
 
-POST    /addOsc                     controllers.Application.addOsc
-POST    /osc/:osc/on                controllers.Application.oscOn(osc:Int)
-POST    /osc/:osc/off               controllers.Application.oscOff(osc:Int)
-POST    /osc/:osc/freq/:freq        controllers.Application.oscFreq(osc:Int, freq:Double)
-POST    /osc/:osc/wave/:wave        controllers.Application.oscWave(osc:Int, wave)
+# UI controls
+GET     /                           controllers.Application.index
+GET     /controls                   controllers.Application.controls
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

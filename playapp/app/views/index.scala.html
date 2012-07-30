@@ -1,4 +1,4 @@
-@()
+@()(implicit request: RequestHeader)
 
 @main("ZOUND") {
 
@@ -10,88 +10,205 @@
       </header>
 
       @Range(0, 3).map { i =>
-        <div class="channel" id="channel@i">
+        <div class="channel" id="channel@i" data-channel="@i">
           <div class="head">
             <h2>Chan @i</h2>
           </div>
-            <div class="sound-onoff">
-              <div class="field">
-                <input id="ch@i-switch-on" type="radio" name="ch@i-on" value="sound-on" />
-                <label for="ch@i-switch-on">On</label>
+
+          <div class="volume-pitch">
+            <div class="sound-volume field">
+              <div class="volume-control" data-value="0.3">
+                <div class="volume-handle"></div>
               </div>
-              <div class="field">
-                <input id="ch@i-switch-off" type="radio" name="ch@i-on" value="sound-off" />
-                <label for="ch@i-switch-off">Off</label>
-              </div>
+              <label>Volume</label>
             </div>
-            <div>
-              <div class="field">
-                <input id="ch@i-wave-sine" type="radio" name="ch@i-wave" value="wave-sine" /> 
-                <label for="ch@i-wave-sine">Sine</label>
+            <div class="sound-pitch field">
+              <div class="volume-control" data-value="0.5">
+                <div class="volume-handle"></div>
               </div>
-              <div class="field">
-                <input id="ch@i-wave-saw" type="radio" name="ch@i-wave" value="wave-saw" /> 
-                <label for="ch@i-wave-saw">Saw</label>
-              </div>
-                <br/>
-              <div class="field">
-                <input id="ch@i-wave-pulse" type="radio" name="ch@i-wave" value="wave-pulse" /> 
-                <label for="ch@i-wave-pulse">Pulse</label>
-              </div>
-              <div class="field">
-                <input id="ch@i-wave-noise" type="radio" name="ch@i-wave" value="wave-noise" /> 
-                <label for="ch@i-wave-noise">Noise</label>
-              </div>
+              <label>Pitch</label>
             </div>
-            <div class="sound-freq">
-              @for( (name, freq) <- List(
-                ("C-1", 164.8),
-                ("E-1", 196.0),
-                ("G-1", 261.6),
-                ("C-2", 329.6),
-                ("E-3", 392.0),
-                ("G-2", 523.2)
-                )) {
-              <div class="field">
-                <input id="ch@i-note-@name" type="radio" name="ch@i-note" value="@freq" /> 
-                <label for="ch@i-note-@name">@name</label>
-              </div>
-              }
+          </div>
+
+            <div class="sound-wave">
+
+                <label class="wave noise">
+                  <input type="radio" name="ch@i-wave" value="noise" /> 
+                </label>
+                <label class="wave saw">
+                  <input type="radio" name="ch@i-wave" value="saw" />
+                </label>
+                <label class="wave sine">
+                  <input type="radio" name="ch@i-wave" value="sine" />
+                </label>
+                <label class="wave square">
+                  <input type="radio" name="ch@i-wave" value="square" /> 
+                </label>
+
             </div>
           </div>
           }
       </section>
 
       <div id="controls">
-        <audio src="/stream.wav" preload autoplay controls></audio>
+        <div id="status">
+          <div class="onair">ON AIR</div>
+        </div>
+        <audio id="stream" autoplay controls>
+          <source src="@routes.Application.stream()" type="audio/wav"></source>
+        </audio>
       </div>
+      <div>
+        <span>Stream URL:</span>
+        <a style="text-decoration: none;" href="@routes.Application.stream().absoluteURL()"><code>@routes.Application.stream().absoluteURL()</code></a>
+      </div>
+
+      <p id="error"></p>
 
       <div style="display: none" class="images">
         <img src="/assets/images/radio.png" alt="" />
         <img src="/assets/images/radio-checked.png" alt="" />
       </div>
 
-    <script type="text/javascript" charset="utf-8">
-        $(".sound-onoff input").click(function(e){
-            var $this = $(this),
-                chan = parseInt($this.parents("div.channel:first").attr("id").replace(/[^0-9]/g, ""), 10),
-                onOff = $this.val().replace("sound-", "");
-            $.post("/osc/" + chan + "/" + onOff);
+      <script type="text/javascript" charset="utf-8">
+        var VOLUME_SIZE = 60;
+        
+        var MIN_PITCH = 150.0;
+        var MAX_PITCH = 600.0;
+
+        function syncVolumeControl (node) {
+          var v = parseFloat(node.attr("data-value"));
+          var rotate = "rotate("+Math.round(280*(v-0.5))+"deg)";
+          node.find(".volume-handle").css({
+            "-webkit-transform": rotate,
+            "-moz-transform": rotate,
+            "-ms-transform": rotate,
+            "-o-transform": rotate,
+            "transform": rotate
+          });
+        }
+
+        $(".volume-control").each(function(){
+          syncVolumeControl($(this));
         });
 
+        function getRelativePosition (e, node) {
+          var position = node.offset();
+          var x = e.clientX-(position.left+node.width()/2);
+          var y = e.clientY-(position.top+node.height()/2);
+          return { x: x, y: y };
+        }
 
-        $(".sound-freq input").click(function(e){
-            var $this = $(this),
-                chan = parseInt($this.parents("div.channel:first").attr("id").replace(/[^0-9]/g, ""), 10),
-                freq = $this.val();
-            $.post("/osc/" + chan + "/freq/" + freq);
+        function updateVolumeControl (e, node) {
+          var p = getRelativePosition(e, node);
+          var clickP = node.data("clickPosition");
+          var clickV = node.data("clickValue");
+          var a = (p.x-clickP.x)/VOLUME_SIZE;
+          var v = clickV+a;
+          v = Math.max(0, Math.min(v, 1));
+          node.attr("data-value", v).trigger("change");
+          syncVolumeControl(node);
+        }
+
+        $(".volume-control").live("mousedown", function (e) {
+          e.preventDefault();
+          var node = $(this);
+          node.data("clickValue", parseFloat(node.attr("data-value")));
+          node.addClass("mousedown").data("clickPosition", getRelativePosition(e, node));
+        });
+        $(document).on("mouseup", function (e) {
+          var node = $(".volume-control.mousedown").removeClass("mousedown");
+          if (node.size())
+            updateVolumeControl(e, node);
+        });
+        $(document).on("mousemove", function (e) {
+          var node = $(".volume-control.mousedown:first");
+          if (node.size()) {
+            e.preventDefault();
+            updateVolumeControl(e, node);
+          }
         });
 
-        $(".sound-wave input").click(function(e){
-            var $this = $(this),
-                chan = parseInt($this.parents("div.channel:first").attr("id").replace(/[^0-9]/g, ""), 10),
-                wave = $this.val().replace("wave-", "");
-            $.post("/osc/" + chan + "/wave/" + wave);
-        })
+        (function(){
+         $("#stream").one("play", main);
+
+         var status = $("#status");
+         var error = $("#error");
+         $("#stream").on("error pause ended waiting", function() {
+           status.toggleClass("enabled", false);
+           });
+         $("#stream").on("play", function() {
+           status.toggleClass("enabled", true);
+         });
+
+         var actions = {
+           
+         }
+
+         var sock = new WebSocket("@routes.Application.controls().webSocketURL()");
+         sock.onmessage = function (o) { 
+          handleAction(JSON.parse(o.data)); 
+         }
+         sock.onerror = function () {
+          error.text("An error occured with the WebSocket connection...");
+         }
+
+         function send (o) {
+           sock.send(JSON.stringify(o));
+         }
+
+         function handleAction (o) {
+           return; // TODO
+           if (!actions[o.type]) {
+             console.log("Unknown Action: ", o);
+             return;
+           }
+           actions[o.type](o);
+         }
+
+         function main () {
+           send({ type: "connect", msg: "ready" });
+
+           $(".sound-freq input").click(function(e){
+               var $this = $(this),
+               chan = parseInt($this.parents("div.channel:first").attr("id").replace(/[^0-9]/g, ""), 10),
+               freq = parseFloat($this.val());
+               send({ type: "osc-freq", osc: chan, value: freq }); 
+               });
+
+           $(".sound-wave input").change(function(e){
+               var $this = $(this),
+               chan = parseInt($this.parents("div.channel:first").attr("id").replace(/[^0-9]/g, ""), 10),
+               wave = $this.val();
+               send({ type: "osc-wave", osc: chan, value: wave });
+               })
+
+           $(".sound-volume .volume-control").on("change", function(e){
+               var $this = $(this),
+               chan = parseInt($this.parents("div.channel:first").attr("id").replace(/[^0-9]/g, ""), 10),
+               volume = parseFloat($this.attr("data-value"));
+               send({ type: "osc-volume", osc: chan, value: volume });
+           });
+           
+           $(".sound-pitch .volume-control").on("change", function(e){
+               var $this = $(this),
+               chan = parseInt($this.parents("div.channel:first").attr("id").replace(/[^0-9]/g, ""), 10),
+               pitch = (MAX_PITCH-MIN_PITCH)*parseFloat($this.attr("data-value"))+MIN_PITCH;
+               send({ type: "osc-freq", osc: chan, value: pitch });
+           });
+         }
+
+
+
+        }());
+
+
+        $(".sound-wave input").change(function(){
+          var checked = $(this).is(":checked");
+          var label = $(this).parent();
+          label.toggleClass("enabled", checked);
+          if (checked)
+            label.siblings().toggleClass("enabled", false);
+        }).change();
     </script>
 }
