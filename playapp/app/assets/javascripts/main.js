@@ -137,7 +137,7 @@
     var clickV = node.data("clickValue");
     var min = parseFloat(node.attr("data-min")||0);
     var max = parseFloat(node.attr("data-max")||1);
-    var a = (p.x-clickP.x)/VOLUME_SIZE;
+    var a = (clickP.y-p.y)/VOLUME_SIZE;
     a = a*(max-min);
     var v = clickV+a;
     v = Math.max(min, Math.min(v, max));

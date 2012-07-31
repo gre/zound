@@ -10,7 +10,7 @@ body {
 }
 
 .volume-control {
-  cursor: col-resize;
+  cursor: row-resize;
   position: relative;
   display: inline-block;
   width: 58px;
