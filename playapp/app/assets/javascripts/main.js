@@ -76,7 +76,11 @@
        var $this = $(this),
        chan = parseInt($this.parents("div.channel:first").attr("id").replace(/[^0-9]/g, ""), 10),
        pitch = parseFloat($this.attr("data-value"));
-       send({ type: "osc-freq", osc: chan, value: pitch });
+
+       var dorian = [146.83, 164.81, 174.61, 196.0, 220.0, 246.94, 261.63, 293.66, 329.63, 349.23];
+       var snapped = dorian.filter(function(p){ return p >= pitch; })[0];
+
+       send({ type: "osc-freq", osc: chan, value: snapped });
      });
    }
 
