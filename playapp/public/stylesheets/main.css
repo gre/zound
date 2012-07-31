@@ -118,6 +118,12 @@ button:active, button:hover {
   overflow: auto;
 }
 
+#channels * {
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
 #channels header {
   display: block;
   text-align: right;

@@ -21,8 +21,9 @@ import scala.util.Random
 // - fitler over all oscs.
 
 
-
-case class Oscillator ( wave: String, amp: Double, freq: Double )
+case class Oscillator ( wave: String, amp: Double, freq: Double ) {
+  def toUnitOscillator = Oscillator.toUnitOscillator(this)
+}
 
 object Oscillator {
 
@@ -101,27 +102,25 @@ class ZoundGenerator(output: Channel[Array[Double]]) {
   
   import scala.concurrent.stm._;
   val oscList = List[Ref[UnitOscillator]](Ref(addRandomOsc()), Ref(addRandomOsc()), Ref(addRandomOsc()))
+
+  def oscN(oscIndex: Int) = oscList(oscIndex).single()
+  def oscN(oscIndex: Int, newOsc: UnitOscillator) = oscList(oscIndex).single() = newOsc
   
   def addRandomOsc() = {
-    addOsc(Oscillator("sine", 0.2, hz(rand.nextInt(hz.length)) * mul(rand.nextInt(mul.length))))
+    connectOsc(Oscillator("sine", 0.2, hz(rand.nextInt(hz.length)) * mul(rand.nextInt(mul.length))).toUnitOscillator)
   }
 
-  def addOsc(o: Oscillator) = {
-    val osc = Oscillator.toUnitOscillator(o)
+  def connectOsc(osc: UnitOscillator) = {
     synth.add(osc)
     osc.output.connect(out)
     osc.stop()
     osc
   }
 
-  def removeOsc(osc: UnitOscillator) = {
+  def disconnectOsc(osc: UnitOscillator) {
     osc.output.disconnect(out.getInput)
     osc.stop()
     synth.remove(osc)
-  }
-
-  def oscVolume(oscIndex:Int, volume: Double) {
-    oscList(oscIndex).single().amplitude.set(volume)
   }
 
   def start() = {
@@ -136,34 +135,21 @@ class ZoundGenerator(output: Channel[Array[Double]]) {
     this
   }
 
-  def oscFreq(oscIndex:Int, freq:Double) = {
+  def oscVolume(oscIndex:Int, volume: Double) {
+    oscN(oscIndex).amplitude.set(volume)
+  }
+
+  def oscFreq(oscIndex:Int, freq:Double) {
     oscList(oscIndex).single().frequency.set(freq)
   }
 
-  def oscWave(oscIndex:Int, waveType:String) = {
-    val oldOsc = oscList(oscIndex).single()
+  def oscWave(oscIndex:Int, waveType:String) {
+    val oldOsc = oscN(oscIndex)
     val freq = oldOsc.frequency.get(0)
     val amp = oldOsc.amplitude.get(0)
-    removeOsc(oldOsc)
-    val osc = addOsc(Oscillator(waveType, amp, freq))
-    oscList(oscIndex).single() = osc
-
-    // val freq = oscList(oscIndex).single().frequency.get()
-    // val amp = oscList(oscIndex).single().amplitude.get()
-    // if(waveType == "sine") {
-    //   println("ammm sine")
-    //   oscList(oscIndex).single() = new SineOscillator()
-    // }
-    // if(waveType == "saw") {
-    //   println("ammm saw")
-    //   synth.remove(oscList(oscIndex).single())
-
-    //   //synth.add(new PinkNoise())
-    // }
-    // val osc = oscList(oscIndex).single()
-    // osc.frequency.set(freq)
-    // osc.amplitude.set(amp)
-    // osc
-    // println(waveType, freq, amp)
+    disconnectOsc(oldOsc)
+    val osc = Oscillator(waveType, amp, freq).toUnitOscillator
+    connectOsc(osc)
+    oscN(oscIndex, osc)
   }
 }
