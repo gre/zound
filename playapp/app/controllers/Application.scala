@@ -32,7 +32,7 @@ object Application extends Controller {
   val (sharedChunkedAudioStream, _) = Concurrent.broadcast(chunkedAudioStream)
 
   def stream = Action {
-    Ok.stream(audioHeader >>> sharedChunkedAudioStream &> Concurrent.dropInputIfNotReady(10)).
+    Ok.stream(audioHeader >>> sharedChunkedAudioStream &> Concurrent.dropInputIfNotReady(50)).
        withHeaders( (CONTENT_TYPE, audio.contentType),
                     (CACHE_CONTROL, "no-cache") )
   }
@@ -46,17 +46,17 @@ object Application extends Controller {
 
   val (controlsStream, controlsChannel) = Concurrent.broadcast[JsValue]
 
-  def controls = WebSocket.async[JsValue] { request =>
+  def controls = WebSocket.using[JsValue] { request =>
     
     // in: handle messages from the user
-    val in = Iteratee.foreach[JsValue](_ match {
-      case o: JsObject => {
+    val in = 
+      Enumeratee.collect[JsValue]{ case o:JsObject => o } &>>
+      Iteratee.foreach { o =>
         zound.action(o)
         controlsChannel push o
       }
-    })
 
-    Promise.pure((in, controlsStream))
+    (in, controlsStream)
   }
 
 }
