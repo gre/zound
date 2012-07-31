@@ -140,8 +140,9 @@ button:active, button:hover {
 
 #channels header h1 .letter.enabled {
   color: #83f9ff;
-  text-shadow: 0px 0px 5px #3eacfb;
-  -webkit-text-stroke: 2px #3eacfb;
+  text-shadow: 0px 0px 10px #3eacfb;
+  -webkit-text-stroke: 1px #3eacfb;
+  -moz-text-stroke: 1px #3eacfb;
   text-stroke: 1px #3eacfb;
 }
 

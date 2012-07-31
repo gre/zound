@@ -47,7 +47,6 @@ object Application extends Controller {
   val (controlsStream, controlsChannel) = Concurrent.broadcast[JsValue]
 
   def controls = WebSocket.using[JsValue] { request =>
-    
     // in: handle messages from the user
     val in = 
       Enumeratee.collect[JsValue]{ case o:JsObject => o } &>>
