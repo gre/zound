@@ -28,21 +28,21 @@
        label.siblings().toggleClass("enabled", false);
      }).change();
      
-     // Init the volume-control indicator
-     $(".volume-control").each(function(){
+     // Init the knob indicator
+     $(".knob").each(function(){
        syncVolumeControl($(this));
      });
 
      initSocket({
        "osc-freq": function (o) {
-         var node = $("#channel"+o.osc+" .sound-pitch .volume-control");
+         var node = $("#channel"+o.osc+" .sound-pitch .knob");
          if (!node.hasClass("mousedown")) {
            node.attr("data-value", o.value);
            syncVolumeControl(node);
          }
        },
        "osc-volume": function (o) {
-         var node = $("#channel"+o.osc+" .sound-volume .volume-control");
+         var node = $("#channel"+o.osc+" .sound-volume .knob");
          if (!node.hasClass("mousedown")) {
            node.attr("data-value", o.value);
            syncVolumeControl(node);
@@ -65,14 +65,14 @@
        send({ type: "osc-wave", osc: chan, value: wave });
      })
 
-     $(".sound-volume .volume-control").live("change", function(e){
+     $(".sound-volume .knob").live("change", function(e){
        var $this = $(this),
        chan = getChannel($this),
        volume = parseFloat($this.attr("data-value"));
        send({ type: "osc-volume", osc: chan, value: volume });
      });
      
-     $(".sound-pitch .volume-control").live("change", function(e){
+     $(".sound-pitch .knob").live("change", function(e){
        var $this = $(this),
        chan = parseInt($this.parents("div.channel:first").attr("id").replace(/[^0-9]/g, ""), 10),
        pitch = parseFloat($this.attr("data-value"));
@@ -98,19 +98,19 @@
 
   // Volume controls
   function initVolumeControls () {
-    $(".volume-control").live("mousedown", function (e) {
+    $(".knob").live("mousedown", function (e) {
       e.preventDefault();
       var node = $(this);
       node.data("clickValue", parseFloat(node.attr("data-value")));
       node.addClass("mousedown").data("clickPosition", getRelativePosition(e, node));
     });
     $(document).on("mouseup", function (e) {
-      var node = $(".volume-control.mousedown").removeClass("mousedown");
+      var node = $(".knob.mousedown").removeClass("mousedown");
       if (node.size())
       updateVolumeControl(e, node);
     });
     $(document).on("mousemove", function (e) {
-      var node = $(".volume-control.mousedown:first");
+      var node = $(".knob.mousedown:first");
       if (node.size()) {
         e.preventDefault();
         updateVolumeControl(e, node);
@@ -123,7 +123,7 @@
     var max = parseFloat(node.attr("data-max")||1);
     v = (v-min)/(max-min);
     var rotate = "rotate("+Math.round(280*(v-0.5))+"deg)";
-    node.find(".volume-handle").css({
+    node.find(".knob-handle").css({
       "-webkit-transform": rotate,
       "-moz-transform": rotate,
       "-ms-transform": rotate,

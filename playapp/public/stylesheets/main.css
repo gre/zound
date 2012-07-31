@@ -9,7 +9,7 @@ body {
   margin: 50px auto;
 }
 
-.volume-control {
+.knob {
   cursor: row-resize;
   position: relative;
   display: inline-block;
@@ -19,7 +19,7 @@ body {
   z-index: 1;
 }
 
-.volume-handle {
+.knob-handle {
   z-index: 2;
   background: url(/assets/images/volume-indicator.png) no-repeat;
   position: absolute;
