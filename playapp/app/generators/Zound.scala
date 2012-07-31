@@ -12,15 +12,6 @@ import play.api.libs.json.Json._
 
 import scala.util.Random
 
-// Create 4 or 5 oscillators
-// - can be On/Off
-// - can switch between a few frequencies (to keep it "musical")
-// - can change wave types
-// Advanced:
-// - with LFO per each (changes freq)
-// - fitler over all oscs.
-
-
 case class Oscillator ( wave: String, amp: Double, freq: Double ) {
   def toUnitOscillator = Oscillator.toUnitOscillator(this)
 }
@@ -57,13 +48,28 @@ object Oscillator {
 class ZoundGenerator(output: Channel[Array[Double]]) {
 
   val out = new MonoStreamWriter()
+  val oscMixer = new DualInTwoOut()
+
   val hz = Array(261.6, 329.6, 392.0)
   val mul = Array(0.25, 0.5, 1, 2, 3)
-  val rand = new Random(System.currentTimeMillis());
+  val rand = new Random(System.currentTimeMillis())
 
   val synth = {
     val synth = JSyn.createSynthesizer()
     synth.add(out)
+    synth.add(oscMixer)
+
+    // Add a filter
+    val highPass = new FilterHighPass
+    synth.add(highPass)
+    oscMixer.outputA.connect(highPass.input)
+    oscMixer.outputB.connect(highPass.input)
+    
+    highPass.frequency.set(0, 577);
+    highPass.Q.set(0, 1.0);
+    highPass.amplitude.set(0, 1.0);
+    highPass.output.connect(out.input);
+
     out.setOutputStream(new AudioOutputStream(){
       def close() {}
       def write(value: Double) {
@@ -98,7 +104,6 @@ class ZoundGenerator(output: Channel[Array[Double]]) {
   def getChannels = oscList map { osc =>
     Oscillator.fromUnitOscillator(osc.single())
   }
-
   
   import scala.concurrent.stm._;
   val oscList = List[Ref[UnitOscillator]](Ref(addRandomOsc()), Ref(addRandomOsc()), Ref(addRandomOsc()))
@@ -112,13 +117,13 @@ class ZoundGenerator(output: Channel[Array[Double]]) {
 
   def connectOsc(osc: UnitOscillator) = {
     synth.add(osc)
-    osc.output.connect(out)
+    osc.output.connect(oscMixer.input)
     osc.stop()
     osc
   }
 
   def disconnectOsc(osc: UnitOscillator) {
-    osc.output.disconnect(out.getInput)
+    osc.output.disconnect(oscMixer.input)
     osc.stop()
     synth.remove(osc)
   }
