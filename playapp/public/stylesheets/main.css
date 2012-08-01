@@ -4,6 +4,10 @@ body {
   color: #ccc;
 }
 
+a {
+  color: #4ebcfb; 
+}
+
 #wrapper {
   width: 600px;
   margin: 50px auto;
