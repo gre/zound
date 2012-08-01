@@ -5,7 +5,9 @@ ZOUND is a PlayFramework 2 audio streaming experiment using Iteratees.
 
 It has been bootstrapped on Friday, 27 July 2012 in a HackDay at [Zenexity](http://zenexity.com).
 
-[Read the technical article](http://blog.greweb.fr/?p=1853)
+* **[Read the technical article](http://blog.greweb.fr/?p=1853)**
+* [Watch the video](http://youtu.be/taDLKTcNHnQ)
+
 
 Using it
 --------
